@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /* <one line to give the program's name and a brief idea of what it does.>
  * Copyright (C) <2016>  <jamelbaz@gmail.com>
  *
@@ -60,10 +60,23 @@ if ($id > 0)
 
     dol_fiche_head($head, 'tabname1', $langs->trans('InvoiceCustomer'), 0, 'Logistique');
     
+    $linkback = '<a href="'.DOL_URL_ROOT.'/compta/facture/list/list.php">'.$langs->trans("BackToList").'</a>';
+
+        dol_banner_tab($object, 'ref', $linkback, ($user->societe_id?0:1), 'ref');
+
+
+        print '<div class="fichecenter">';
+
+        print '<div class="underbanner clearboth"></div>';
+        print '<table class="border tableforfield" width="100%">';
     
     
-    
-    
+    print "</table>";
+
+        print '</div>';
+        print '<div style="clear:both"></div>';
+
+		dol_fiche_end();
     
     
     
@@ -82,7 +95,7 @@ if ($id > 0)
 	<tbody>
 	   <tr class="liste_titre">
 		  <td>Produits</td>
-		  <td>Poid_U</td>
+		  <td>Poid</td>
 		  <td>Volume</td>
 		  <td>QTE</td>
 		  <td>Total Poids</td>
@@ -108,9 +121,9 @@ if ($id > 0)
 		  <td><?php $PoidsTotal = $v->qty * $prodstatic->weight; echo $PoidsTotal ;?></td>
 		  <td><?php echo $v->qty * $prodstatic->volume;?></td>
 		  <td><?php $qty_pal = $prodstatic->array_options['options_qtepal']; echo $qty_pal;?></td>
-		  <td><?php echo $qty_pal/$v->qty;?></td>
+		  <td><?php $nb_pal = round($qty_pal/$v->qty,2); echo $nb_pal;?></td>
 		  <td><?php $qtecam = $prodstatic->array_options['options_qtecam']; echo $qtecam;?></td>
-		  <td><?php echo $qtecam/$v->qty;?></td>
+		  <td><?php $cam = round($qtecam/$v->qty,2); echo $cam ;?></td>
 	   </tr>
 	   <?php endforeach;?>
 	</tbody>
