@@ -23,11 +23,8 @@ if (false === (@include '../main.inc.php')) {  // From htdocs directory
 }
 require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
-
-
-
 require_once DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php';
-$action = GETPOST('action');
+$action=GETPOST('action','alpha');
 
 $langs->load("companies");
 
@@ -62,6 +59,17 @@ if ($id > 0)
     $head = facture_prepare_head($object);
 
     dol_fiche_head($head, 'tabname1', $langs->trans('InvoiceCustomer'), 0, 'Logistique');
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
    // print_r($data)
  ?> 
 
@@ -73,7 +81,7 @@ if ($id > 0)
 	<caption>Repartitions</caption>
 	<tbody>
 	   <tr class="liste_titre">
-		  <td>Description</td>
+		  <td>Produits</td>
 		  <td>Poid_U</td>
 		  <td>Volume</td>
 		  <td>QTE</td>
@@ -93,26 +101,28 @@ if ($id > 0)
 	   
 	   ?>
 	   <tr class="impair">
-		  <td><?php echo $v->libelle. ' '. $v->desc;?></td>
+		  <td><?php echo $prodstatic->getNomUrl(1). ' '  .$v->libelle. ' '. $v->desc;?></td>
 		  <td><?php echo $prodstatic->weight;?></td>
 		  <td><?php echo $prodstatic->volume;?></td>
 		  <td><?php echo $v->qty;?></td>
-		  <td><?php echo $v->qty * $prodstatic->weight;?></td>
+		  <td><?php $PoidsTotal = $v->qty * $prodstatic->weight; echo $PoidsTotal ;?></td>
 		  <td><?php echo $v->qty * $prodstatic->volume;?></td>
-		  <td><?php $qty_pal = $prodstatic->array_options->options_qtepal; echo $qty_pal;?></td>
+		  <td><?php $qty_pal = $prodstatic->array_options['options_qtepal']; echo $qty_pal;?></td>
 		  <td><?php echo $qty_pal/$v->qty;?></td>
-		  <td><?php $qtecam = $prodstatic->array_options->options_qtecamecho; echo $qtecam;?></td>
+		  <td><?php $qtecam = $prodstatic->array_options['options_qtecam']; echo $qtecam;?></td>
 		  <td><?php echo $qtecam/$v->qty;?></td>
 	   </tr>
 	   <?php endforeach;?>
 	</tbody>
 	<tfoot>
+	
+	
 		<tr class="liste_titre">
 		  <td align="center">Total:</td>
 		   <td></td>
 		  <td></td>
 		  <td></td>
-		  <td></td>
+		  <td><?php $PoidsTotal ; ?></td>
 		  <td></td>
 		  <td></td>
 		  <td></td>
