@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /* <one line to give the program's name and a brief idea of what it does.>
  * Copyright (C) <2016>  <jamelbaz@gmail.com>
  *
@@ -23,11 +23,8 @@ if (false === (@include '../main.inc.php')) {  // From htdocs directory
 }
 require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
-
-
-
 require_once DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php';
-$action = GETPOST('action');
+$action=GETPOST('action','alpha');
 
 $langs->load("companies");
 
@@ -62,6 +59,30 @@ if ($id > 0)
     $head = facture_prepare_head($object);
 
     dol_fiche_head($head, 'tabname1', $langs->trans('InvoiceCustomer'), 0, 'Logistique');
+    
+    $linkback = '<a href="'.DOL_URL_ROOT.'/compta/facture/list/list.php">'.$langs->trans("BackToList").'</a>';
+
+        dol_banner_tab($object, 'ref', $linkback, ($user->societe_id?0:1), 'ref');
+
+
+        print '<div class="fichecenter">';
+
+        print '<div class="underbanner clearboth"></div>';
+        print '<table class="border tableforfield" width="100%">';
+    
+    
+    print "</table>";
+
+        print '</div>';
+        print '<div style="clear:both"></div>';
+
+		dol_fiche_end();
+    
+    
+    
+    
+    
+    
    // print_r($data)
  ?> 
 
@@ -73,8 +94,8 @@ if ($id > 0)
 	<caption>Repartitions</caption>
 	<tbody>
 	   <tr class="liste_titre">
-		  <td>Description</td>
-		  <td>Poid_U</td>
+		  <td>Produits</td>
+		  <td>Poid</td>
 		  <td>Volume</td>
 		  <td>QTE</td>
 		  <td>Total Poids</td>
@@ -84,40 +105,62 @@ if ($id > 0)
 		  <td>Qte Par Cam.</td>
 		  <td>% Camion</td>
 	   </tr>
-	   <?php $somme = 0; 
+	   <?php 
+	   $t_poid = 0; 
+	   $t_volume = 0; 
+	   $t_qte_pal = 0; 
+	   $t_nbr_pal = 0; 
+	   $t_qte_cam = 0; 
+	   $t_prc_cam = 0; 
 	   foreach($lines as $k => $v): 
 			$prodstatic = new Product($db);
             $prodstatic->fetch(null, $v->ref);
 	   // var_dump($prodstatic->array_options);die;
 	   // var_dump($v);die;
+	   $PoidsTotal = $v->qty * $prodstatic->weight;
+	   $t_poid += $PoidsTotal;
+	   
+	   $volumeTotal = $v->qty * $prodstatic->volume;
+	   $t_volume += $volumeTotal;
+	   
+	   $qty_pal = $prodstatic->array_options['options_qtepal']; 
+	   $t_qte_pal = 0; 
+	   
+	   $nb_pal = round($qty_pal/$v->qty,2);
+	   $t_nbr_pal += $nb_pal;
+	   
+	   $qtecam = $prodstatic->array_options['options_qtecam'];
+	   $t_qte_cam += $qtecam = $prodstatic->array_options['options_qtecam']; 
+	   
+	   $cam = round($qtecam/$v->qty,2); 
+	   $t_prc_cam += $cam; 
 	   
 	   ?>
 	   <tr class="impair">
-		  <td><?php echo $v->libelle. ' '. $v->desc;?></td>
+		  <td><?php echo $prodstatic->getNomUrl(1). ' '  .$v->libelle. ' '. $v->desc;?></td>
 		  <td><?php echo $prodstatic->weight;?></td>
 		  <td><?php echo $prodstatic->volume;?></td>
 		  <td><?php echo $v->qty;?></td>
-		  <td><?php echo $v->qty * $prodstatic->weight;?></td>
-		  <td><?php echo $v->qty * $prodstatic->volume;?></td>
-		  <td><?php $qty_pal = $prodstatic->array_options->options_qtepal; echo $qty_pal;?></td>
-		  <td><?php echo $qty_pal/$v->qty;?></td>
-		  <td><?php $qtecam = $prodstatic->array_options->options_qtecamecho; echo $qtecam;?></td>
-		  <td><?php echo $qtecam/$v->qty;?></td>
+		  <td><?php echo $PoidsTotal ;?></td>
+		  <td><?php echo $volumeTotal;?></td>
+		  <td><?php echo $qty_pal;?></td>
+		  <td><?php echo $nb_pal;?></td>
+		  <td><?php echo $qtecam;?></td>
+		  <td><?php echo $cam ;?></td>
 	   </tr>
 	   <?php endforeach;?>
 	</tbody>
 	<tfoot>
+	
+	
 		<tr class="liste_titre">
-		  <td align="center">Total:</td>
-		   <td></td>
-		  <td></td>
-		  <td></td>
-		  <td></td>
-		  <td></td>
-		  <td></td>
-		  <td></td>
-		  <td></td>
-		  <td></td>
+		  <td align="center" colspan="4">Total:</td>
+		  <td><?php echo $t_poid ; ?></td>
+		  <td><?php echo $t_volume ; ?></td>
+		  <td><?php echo $t_qte_pal ; ?></td>
+		  <td><?php echo $t_nbr_pal ; ?></td>
+		  <td><?php echo $t_qte_cam ; ?></td>
+		  <td><?php echo $t_prc_cam ; ?></td>
 	   </tr>
 	</tfoot>
 </table>
